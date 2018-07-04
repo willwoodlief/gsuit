@@ -1,0 +1,8 @@
+{
+    "require": {
+        "google/apiclient": "^2.2",
+        "neitanod/forceutf8": "^2.0",
+        "phpoffice/phpexcel": "^1.8",
+        "jasongrimes/paginator": "~1.0"
+    }
+}
