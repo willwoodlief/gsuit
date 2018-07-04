@@ -52,3 +52,6 @@ the spreadsheet header stuff is
 	twitter	
 	linkedin	
 	facebook
+	
+lastly, the permission in config need to be so the php can write to files there
+and sheets.db and credentials.json (automatically generated) will need to be written to
