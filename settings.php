@@ -231,17 +231,24 @@ try {
               crossorigin="anonymous">
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js" ></script>
-        <script src="https://cdn.ckeditor.com/ckeditor5/11.0.1/classic/ckeditor.js"></script>
+<!--        <script src="https://cdn.ckeditor.com/ckeditor5/11.0.1/classic/ckeditor.js"></script>-->
+        <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
         <script>
             $(function() {
-                ClassicEditor
-                    .create( document.querySelector( '#email-message' ) )
-                    .then( editor => {
-                        console.log( editor );
-                    } )
-                    .catch( error => {
-                        console.error( error );
-                    } );
+                // ClassicEditor
+                //     .create( document.querySelector( '#email-message' ) )
+                //     .then( editor => {
+                //         console.log( editor );
+                //     } )
+                //     .catch( error => {
+                //         console.error( error );
+                //     } );
+
+
+                CKEDITOR.replace( 'email-message', {
+                    removeButtons: 'Redo,Undo',
+                    height: '25em'
+                } );
 
                 var text ;
                 var sig_editor = ace.edit("footer-template");
