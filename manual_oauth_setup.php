@@ -7,9 +7,7 @@ try {
 	if ( ! empty( $_REQUEST )  && isset($_REQUEST['code'])) {
 		//store the token if it exists
 		get_directory_client($_REQUEST['code'],$messages);
-	} else if ( ! empty( $_REQUEST ) ) {
-	    throw new Exception("Was looking for a code param in the call to this web page but did not find it");
-    } else {
+	}  else {
 		//kick start the process
 		get_directory_client(null,$messages,false);
 	}
@@ -63,6 +61,11 @@ try {
     <div class='col-sm-12 col-md-12 col-lg-12 '>
         <h1>If there are no red alerts above, then this script is connected to the gsuit directory api </h1>
         <p> You can now leave this page and go to the <a href="scan.php"> Scan Page</a> </p>
+    </div>
+
+    <div class='col-sm-12 col-md-12 col-lg-12 '>
+
+        <p> Or Go Back to the  <a href="settings.php">Settings Page</a> </p>
     </div>
 
 </body>

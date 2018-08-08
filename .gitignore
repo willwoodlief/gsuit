@@ -6,3 +6,8 @@
 /config/web-auth.json
 /data/.~lock.data-account-file.xlsx#
 /data/data-account-file.xlsx
+/res/banner/
+!/res/banner/.keep
+/res/logo/
+!/res/logo/.keep
+/tmp/
