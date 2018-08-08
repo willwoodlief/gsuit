@@ -408,10 +408,10 @@ try {
                         </div>
 
                         <div class="form-group">
-                            <label for="banner-image">Footer</label>
+                            <label for="banner-image">Banner</label>
                             <input id="banner-image" name="banner-image" type="file" class="file"
                                    placeholder="The Footer Image">
-                            <span class="help-block">Upload the Footer Here</span>
+                            <span class="help-block">Upload the Banner Here</span>
                             <img src="<?= $banner_url ?>">
                         </div>
 
