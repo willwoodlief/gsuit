@@ -53,6 +53,20 @@ if ($b_new) {
 
             </td>
         </tr>
+
+        <tr>
+            <td colspan="2">
+                <form action="download.php" method="post" class="download-single-sig-form" enctype="multipart/form-data">
+                    <input type="hidden" name="style" value="single">
+                    <input type="hidden" name="email[]" value="<?= $primary_email ?>">
+                    <input type="hidden" name="sig[]" value="<?= base64_encode($footer) ?>" >
+                    <button type="submit" name="download-credentials"
+                            class="btn btn-default btn-block full-width form-control" style="" value="1">
+                        Download Signature As HTML
+                    </button>
+                </form>
+            </td>
+        </tr>
         
         <tr>
             <td colspan="2">
@@ -73,6 +87,7 @@ if ($b_new) {
 
             </td>
         </tr>
+
     </table>
 
 </div>

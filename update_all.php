@@ -1,4 +1,5 @@
 <?php
+set_time_limit( 0 );
 require_once realpath( dirname( __FILE__ ) ) . "/vendor/autoload.php";
 require_once realpath( dirname( __FILE__ ) ) . "/lib/helpers.php";
 # here, if something is called, we get the post vars and we update the user signature

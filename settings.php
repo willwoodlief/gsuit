@@ -243,10 +243,10 @@ try {
                 //     .catch( error => {
                 //         console.error( error );
                 //     } );
-
+                // above was for version 5, but using version 4 as its more web dev friendly
 
                 CKEDITOR.replace( 'email-message', {
-                    removeButtons: 'Redo,Undo',
+                    removeButtons: 'Redo,Undo', // there is not enough room to show the entire menu so some has to go
                     height: '25em'
                 } );
 
@@ -314,7 +314,7 @@ try {
 	<?php print_alerts( $issues, 'danger' ) ?>
     <div class="container">
         <div class="row" style="margin-bottom: 2em">
-            <h1 class="display-1" style="text-align: left;margin-left: 0">GSuit Set Up</h1>
+            <h1 class="display-1" style="text-align: left;margin-left: 0">GSuit Set Up <span style="font-size: small"> <a href="scan.php">Go To Scan Page</a></span> </h1>
             <div class="panel panel-primary col-sm-12 col-md-5" >
                 <div class="panel-heading">
                     <h2 class="panel-title">You can manage the Certificates Here</h2>
