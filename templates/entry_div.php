@@ -55,7 +55,23 @@ if ($b_new) {
         </tr>
 
         <tr>
-            <td colspan="2">
+            <td >
+	            <?php if ($b_valid) { ?>
+                    <button class="btn-default  btn-block email-sig"
+                            data-email="<?= $primary_email ?>"
+                            data-footer="<?= base64_encode($footer) ?>"
+                            data-alias="<?= $send_as_email ?>"
+                    >
+                        Email Signature <?= $primary_email ?>
+                    </button>
+                    <br>
+                    <span class="status" style="font-size: larger;color:green"></span>
+                    <span class="error" style="font-size: larger;color:red"></span>
+	            <?php }  else {?>
+                    <span class="error" style="font-size: larger;color:red">Cannot email</span>
+	            <?php } ?>
+
+                <br>
                 <form action="download.php" method="post" class="download-single-sig-form" enctype="multipart/form-data">
                     <input type="hidden" name="style" value="single">
                     <input type="hidden" name="email[]" value="<?= $primary_email ?>">
@@ -65,6 +81,9 @@ if ($b_new) {
                         Download Signature As HTML
                     </button>
                 </form>
+            </td>
+            <td>
+
             </td>
         </tr>
         

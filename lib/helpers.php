@@ -205,7 +205,7 @@ function normalizePath($path) {
  */
 function get_directory_client($code ,array &$messages, $b_throw_if_cant = true)
 {
-	$redirect_url = getenv('GOOGLE_WEB_AUTH_REDIRECT_URL');
+	$redirect_url = get_url('GOOGLE_WEB_AUTH_REDIRECT_URL');
 	if (empty($messages)) {
 		$messages = [];
 	}
@@ -266,7 +266,6 @@ function create_email_client() {
 	$client = new Google_Client();
 	$client->useApplicationDefaultCredentials();
 	$client->setScopes(array('https://www.googleapis.com/auth/gmail.settings.basic','https://www.googleapis.com/auth/gmail.settings.sharing'));
-	$client->setSubject('william@popmydesigns.com');
 	return $client;
 }
 
@@ -342,6 +341,46 @@ function get_gmail_object($client,$user_to_impersonate,&$send_as_email,&$old_sig
 	return $gmail;
 }
 
+/**
+ * Send Message.
+ *
+ * @param  Google_Service_Gmail $service Authorized Gmail API instance.
+ * @param  string $toAddress, email address this is going to
+ * @param  string|null $strSubject message subject line
+ * @param  string  $message Message to send.
+ * @return Google_Service_Gmail_Message sent Message.
+ */
+function sendMessage($service, $toAddress, $strSubject,  $message) {
+
+	if (empty($strSubject)) {
+		$strSubject =  'Test mail using GMail API' . date('M d, Y h:i:s A');
+	}
+
+
+	$strRawMessage = '';
+	//$strRawMessage .= "From: myAddress<myemail@gmail.com>\r\n";
+	$strRawMessage .= "To: $toAddress\r\n";
+	$strRawMessage .= 'Subject: =?utf-8?B?' . base64_encode($strSubject) . "?=\r\n";
+	$strRawMessage .= "MIME-Version: 1.0\r\n";
+	$strRawMessage .= "Content-Type: text/html; charset=utf-8\r\n";
+	$strRawMessage .= 'Content-Transfer-Encoding: quoted-printable' . "\r\n\r\n";
+	if (empty($message)) {
+		$strRawMessage .= "this <b>is a test message!\r\n";
+	} else {
+		$strRawMessage .= $message;
+	}
+
+	// The message needs to be encoded in Base64URL
+	$mime = rtrim(strtr(base64_encode($strRawMessage), '+/', '-_'), '=');
+	$msg = new Google_Service_Gmail_Message();
+	$msg->setRaw($mime);
+	//The special value **me** can be used to indicate the authenticated user.
+	$message = $service->users_messages->send($toAddress, $msg);
+
+
+	return $message;
+
+}
 /**
  * Prints out html for errors
  *
@@ -519,7 +558,7 @@ function get_image_url($type) {
 		throw new Exception("Too many files in  $type. Should only be one image");
 	}
 
-	$web_root = getenv('WEB_ROOT');
+	$web_root = get_url('WEB_ROOT');
 	$file = $files[0];
 	$url =  "$web_root/res/$type/$file";
 	return $url;
@@ -617,3 +656,54 @@ function replace_env_var($var,$value) {
 
 	//write file back out
 }
+
+/**
+ * @param string $which
+ *
+ * @return string
+ * @throws Exception
+ */
+function get_url($which) {
+	$base_path = realpath(dirname(__FILE__)."/../config/urls.json");
+	if (!$base_path) {
+		throw new Exception("cannot find config/config/urls.json");
+	}
+	//suck in file
+	$env_file = file_get_contents($base_path);
+	if (!$env_file) {
+		throw new Exception("Cannot Read the config/envs.php");
+	}
+	$urls = json_decode($env_file,true);
+	if (!array_key_exists($which,$urls)) {
+		throw new Exception("$which is not found in the url json hash at config/urls.json");
+	}
+	return $urls[$which];
+}
+
+
+/**
+ * @param string $which
+ * @param string $new_url
+ * @return void
+ * @throws Exception
+ */
+function save_url($which,$new_url) {
+	$base_path = realpath(dirname(__FILE__)."/../config/urls.json");
+	if (!$base_path) {
+		throw new Exception("cannot find config/config/urls.json");
+	}
+	//suck in file
+	$env_file = file_get_contents($base_path);
+	if (!$env_file) {
+		throw new Exception("Cannot Read the config/envs.php");
+	}
+	$urls = json_decode($env_file,true);
+	if (!array_key_exists($which,$urls)) {
+		throw new Exception("$which is not found in the url json hash at config/urls.json");
+	}
+	$urls[$which] = $new_url;
+	$new_envs = json_encode($urls);
+	file_put_contents($base_path,$new_envs);
+}
+
+

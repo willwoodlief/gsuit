@@ -11,3 +11,4 @@
 /res/logo/
 !/res/logo/.keep
 /tmp/
+/config/smtp.json

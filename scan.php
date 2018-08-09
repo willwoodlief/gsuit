@@ -197,7 +197,7 @@ catch (Exception $e) {
         $(function() {
             var public_ajax_obj = {nonce: null,action: 'update',ajax_url: 'update.php'};
             var ajax_obj = null;
-            function talk_to_server(method, server_options, success_callback, error_callback) {
+            function talk_to_server(url_to, server_options, success_callback, error_callback) {
 
                 if (!server_options) {
                     server_options = {};
@@ -209,7 +209,7 @@ catch (Exception $e) {
                 outvars._ajax_nonce = public_ajax_obj.nonce;
                 // noinspection JSUnresolvedVariable
                 outvars.action = public_ajax_obj.action;
-                outvars.method = method;
+
                 // noinspection ES6ModulesDependencies
                 // noinspection JSUnresolvedVariable
                 ajax_obj = $.ajax({
@@ -220,7 +220,7 @@ catch (Exception $e) {
                         }
                     },
                     dataType: "json",
-                    url: public_ajax_obj.ajax_url,
+                    url: url_to,
                     data: outvars,
                     success: success_handler,
                     error: error_handler
@@ -300,8 +300,22 @@ catch (Exception $e) {
                 var error = function(msg) {
                     $(that).closest("table").find('span.error').text(msg);
                 };
-                talk_to_server("update-sig",things, success,error)
+                talk_to_server("update.php",things, success,error)
             });
+
+            $("button.email-sig").click(function() {
+                var things = {sig: $(this).data('footer'),email:$(this).data('email'), alias: $(this).data('alias')};
+
+                var that = this;
+                var success = function(data) {
+                    $(that).closest("table").find('span.status').text(data.message);
+                };
+                var error = function(msg) {
+                    $(that).closest("table").find('span.error').text(msg);
+                };
+                talk_to_server("email_out.php",things, success,error)
+            });
+
         });
 
     </script>

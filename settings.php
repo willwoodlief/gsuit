@@ -33,7 +33,9 @@ try {
 		'res/banner',
 		'res/logo',
 		'templates/signature_template.php',
-		'templates/email_notice_template.php'
+		'templates/email_notice_template.php',
+        'config/smtp.json',
+		'config/urls.json'
 
 	];
 
@@ -115,7 +117,15 @@ try {
 			    throw new Exception("Could not save $signature_path");
 		    }
 
-		    replace_env_var('WEB_ROOT',$_POST['domain-url']);
+		    $smtp_json = $_POST['smtp-json'];
+		    $smtp_json_path = $root_path . "/config/smtp.json";
+		    $b_what = file_put_contents($smtp_json_path,$smtp_json);
+		    if ($b_what === false) {
+			    throw new Exception("Could not save $smtp_json_path");
+		    }
+
+		    save_url('WEB_ROOT',$_POST['domain-url']);
+
 		    header("Location: settings.php");
 		    exit;
 
@@ -151,6 +161,9 @@ try {
 			}
 
 
+
+
+
 			$web_auth_json = $_POST['web-auth-json'];
 			$web_auth_path = $root_path . "/config/web-auth.json";
 			$b_what = file_put_contents($web_auth_path,$web_auth_json);
@@ -158,9 +171,9 @@ try {
 				throw new Exception("Could not save $web_auth_path");
 			}
 
-			replace_env_var('GOOGLE_WEB_AUTH_REDIRECT_URL',$_POST['oauth-callback']);
+			save_url('GOOGLE_WEB_AUTH_REDIRECT_URL',$_POST['oauth-callback']);
 
-			header("Location: manual_oauth_setup.php");
+			header("Location: ". $_POST['oauth-callback']);
 			exit;
 
 		}
@@ -178,11 +191,12 @@ try {
     try {
 
 
-	    $oauth_callback       = getenv( 'GOOGLE_WEB_AUTH_REDIRECT_URL' );
+	    $oauth_callback       = get_url( 'GOOGLE_WEB_AUTH_REDIRECT_URL' );
 	    $web_auth_json        = file_get_contents( $root_path . "/config/web-auth.json" );
 	    $service_account_json = file_get_contents( $root_path . "/config/service-account.json" );
+	    $smtp_json =            file_get_contents( $root_path . "/config/smtp.json" );
 
-	    $domain_url      = getenv( 'WEB_ROOT' );
+	    $domain_url      = get_url('WEB_ROOT');
 	    $footer_template = file_get_contents( $root_path . "/templates/signature_template.php" );
 	    $email_message   = file_get_contents( $root_path . "/templates/email_notice_template.php" );
 	    $logo_url        = get_image_url( 'logo' );
@@ -274,6 +288,18 @@ try {
 
 
 
+                var smtp_editor = ace.edit("smtp-json");
+                smtp_editor.getSession().setValue(<?= json_encode($smtp_json); ?>);
+                smtp_editor.setTheme("ace/theme/dawn");
+                smtp_editor.getSession().setMode("ace/mode/json");
+                smtp_editor.getSession().setUseWrapMode(true);
+
+                var smtp_textarea = $('textarea[name="smtp-json"]');
+                text = smtp_editor.innerHTML;
+                smtp_textarea.val(text);
+
+
+
                 var service_account_editor = ace.edit("service-account-json");
                 service_account_editor.getSession().setValue(<?= json_encode($service_account_json) ?>);
                 service_account_editor.setTheme("ace/theme/dawn");
@@ -290,6 +316,7 @@ try {
                     service_account_textarea.val(service_account_editor.getSession().getValue());
                     web_auth_textarea.val(web_auth_editor.getSession().getValue());
                     sig_textarea.val(sig_editor.getSession().getValue());
+                    smtp_textarea.val(smtp_editor.getSession().getValue());
                     return true;
                 });
 
@@ -297,6 +324,7 @@ try {
                     service_account_textarea.val(service_account_editor.getSession().getValue());
                     web_auth_textarea.val(web_auth_editor.getSession().getValue());
                     sig_textarea.val(sig_editor.getSession().getValue());
+                    smtp_textarea.val(smtp_editor.getSession().getValue());
                     return true;
                 });
 
@@ -328,6 +356,13 @@ try {
                         </div>
                     </div>
                     <form action="settings.php" method="post" id="form_certificates" enctype="multipart/form-data">
+
+
+
+
+
+
+
                         <div class="form-group">
                             <label for="service-account-json">Service Account Json</label>
 
@@ -407,6 +442,16 @@ try {
 
 
                         <div class="form-group">
+                            <label for="service-account-json">SMTP Json</label>
+
+                            <div class="form-control " id="smtp-json" style="height: 25em"
+                            ></div>
+                            <textarea name="smtp-json" style="display: none;"  title=""></textarea>
+                            <span class="help-block">SMTP Settings for Emailing</span>
+                        </div>
+
+
+                        <div class="form-group">
                             <label for="logo-image">Logo</label>
                             <input id="logo-image" name="logo-image" type="file" class="file"
                                    placeholder="The Logo Image">
@@ -444,37 +489,6 @@ try {
     </html>
 
 <?php
-//settings page
-//do a check for writable files and folders
-
-
-//
-//update and change banner, logo, (they will be saved in a new folder called domain)
-//their path will be given in a php variable when template is called
-//
-//update and change domain via an input box:
-//  rewrite env file
-//	  domain will change GOOGLE_WEB_AUTH_REDIRECT_URL in env
-//	  domain itself will be set to DOMAIN in env
-//
-//update and change WEB_ROOT same as domain
-
-//change oauth settings:
-//  upload web-auth.json - put in config/web-auth.json
-//  upload service-account.json - put in config/service-account.json
-//  * config/credentials.json and make the page visit manual setup when these change
-//ace template for html, with live preview next to it
-//
-//ckeditor email notice template
-//
-//list of to do
-//1) change banner and logo to be saved in a way that does not depend on their name : they will each have a folder, and be the
-//only contents of that folder
-
-//$file_path = get_image_path('banner');
-//replace_env_var('GOOGLE_WEB_AUTH_REDIRECT_URL','xxxxx-yyyyy');
-
-
 
 
 

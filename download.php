@@ -52,7 +52,7 @@ if ($_POST) {
 			fwrite( $file, $html );
 			fseek( $file, 0 );
 			header( 'Content-Description: File Transfer' );
-			header( 'Content-Type: application/zip' );
+			header( 'Content-Type: text/html' );
 			header( 'Content-Disposition: attachment; filename=' . $the_name );
 			header( 'Content-Transfer-Encoding: binary' );
 			header( 'Expires: 0' );
@@ -106,7 +106,7 @@ if ($_POST) {
 				fwrite( $file, $the_sig );
 				fseek( $file, 0 );
 				header( 'Content-Description: File Transfer' );
-				header( 'Content-Type: application/zip' );
+				header( 'Content-Type: text/html' );
 				header( 'Content-Disposition: attachment; filename=' . $the_name );
 				header( 'Content-Transfer-Encoding: binary' );
 				header( 'Expires: 0' );
