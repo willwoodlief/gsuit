@@ -56,7 +56,7 @@ try {
 		$mail->Port = $smtp->port;                                    // TCP port to connect to
 
 		//Recipients
-		$mail->setFrom($smtp->from_email, $smtp->from_name);
+		$mail->setFrom($smtp->from_email);
 		$mail->addAddress($primary_email);     // Add a recipient
 
 
