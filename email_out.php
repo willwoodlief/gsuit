@@ -7,6 +7,16 @@ require_once realpath( dirname( __FILE__ ) ) . "/lib/helpers.php";
 use PHPMailer\PHPMailer\PHPMailer;
 
 
+function stest($ip, $portt) {
+	$fp = @fsockopen($ip, $portt, $errno, $errstr, 0.1);
+	if (!$fp) {
+		return false;
+	} else {
+		fclose($fp);
+		return true;
+	}
+}
+
 try {
 	if (!isset($_POST['email'])) {
 		throw new Exception("Email needs to be in the post");
@@ -19,6 +29,8 @@ try {
 	if (!isset($_POST['alias'])) {
 		throw new Exception("Alias needs to be in the post");
 	}
+
+
 
 	$primary_email = $_POST['email'];
 	$alias = $_POST['alias'];
@@ -43,15 +55,23 @@ try {
 	}
 
 
+
 	$mail = new PHPMailer(true);                              // Passing `true` enables exceptions
 	try {
+		ob_start();
+
+		if (!stest($smtp->host,$smtp->port)) {
+			throw new \Exception("Cannot reach " . $smtp->host . ' ' . $smtp->port);
+		} else {
+			Print "[Port is Open]\n";
+		}
 		//Server settings
-		$mail->SMTPDebug = 0;                                 // Enable verbose debug output
+		$mail->SMTPDebug = 2;                                 // Enable verbose debug output
 		$mail->isSMTP();                                      // Set mailer to use SMTP
 		$mail->Host = $smtp->host;  // Specify main and backup SMTP servers
 		$mail->SMTPAuth = true;                               // Enable SMTP authentication
 		$mail->Username = $smtp->username;                 // SMTP username
-		$mail->Password = $smtp->password;                           // SMTP password
+		$mail->Password = $smtp->password ;                           // SMTP password
 		$mail->SMTPSecure = $smtp->security;                            // Enable TLS encryption, `ssl` also accepted
 		$mail->Port = $smtp->port;                                    // TCP port to connect to
 
@@ -70,13 +90,20 @@ try {
 		$mail->send();
 
 	} catch (PHPMailer\PHPMailer\Exception $e) {
-		throw new Exception( 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo);
+		throw new Exception( 'Message could not be sent (v2). Mailer Error: ', $mail->ErrorInfo);
 	}
 
 
 
 
 } catch (Exception $e) {
-	JsonHelpers::printErrorJSONAndDie($e->getMessage() . "\n<br>\n" . $e->getTraceAsString());
+	$html = ob_get_contents();
+	ob_end_clean();
+	if (empty(trim($html))) {
+		$html = "Debug was empty!\n";
+	}
+	JsonHelpers::printErrorJSONAndDie('' . $e->getMessage() . "\n Debug is: ".$html."<br>\n" . $e->getTraceAsString());
 }
-JsonHelpers::printStatusJSONAndDie("Processed");
+$html = ob_get_contents();
+ob_end_clean();
+JsonHelpers::printStatusJSONAndDie("Processed\n".$html);
