@@ -88,7 +88,7 @@ try {
             var public_ajax_obj = {nonce: null, action: 'update', ajax_url: 'update_all.php'};
             var ajax_obj = null;
 
-            function talk_to_server(method, server_options, success_callback, error_callback) {
+            function talk_to_server(url_to, server_options, success_callback, error_callback) {
 
                 if (!server_options) {
                     server_options = {};
@@ -100,7 +100,7 @@ try {
                 outvars._ajax_nonce = public_ajax_obj.nonce;
                 // noinspection JSUnresolvedVariable
                 outvars.action = public_ajax_obj.action;
-                outvars.method = method;
+
                 // noinspection ES6ModulesDependencies
                 // noinspection JSUnresolvedVariable
                 ajax_obj = $.ajax({
@@ -111,7 +111,7 @@ try {
                         }
                     },
                     dataType: "json",
-                    url: public_ajax_obj.ajax_url,
+                    url: url_to,
                     data: outvars,
                     success: success_handler,
                     error: error_handler
@@ -121,7 +121,7 @@ try {
 
                     // noinspection JSUnresolvedVariable
                     if (data.valid) {
-                        if (data.hasOwnProperty('new_nonce')) {
+                        if (data.hasOwnProperty('new_nonce') ) {
                             public_ajax_obj.nonce = data.new_nonce;
                         }
                         if (success_callback) {
@@ -132,7 +132,7 @@ try {
                     } else {
                         if (error_callback) {
                             console.warn(data);
-                            error_callback(null, data);
+                            error_callback(null,data);
                         } else {
                             console.debug(data);
                         }
@@ -172,7 +172,7 @@ try {
 
                     if (error_callback) {
                         console.warn(message);
-                        error_callback(message, null);
+                        error_callback(message,null);
                     } else {
                         console.warn(message);
                     }
@@ -182,6 +182,12 @@ try {
             }
 
             $("button.update-all").click(function () {
+
+                var status_span = $(this).closest("div.update-all-holder").find('span.status');
+                var error_span = $(this).closest("div.update-all-holder").find('span.error');
+                var spinner = $(this).closest("div.update-all-holder").find('span.wait-progress');
+
+
                 $('ul.unprocessed-emails').html('');
                 $('div.unprocessed-emails').hide();
                 $('ul.processed-emails').html('');
@@ -191,15 +197,15 @@ try {
                 $('div.ignored-emails').hide();
 
 
-                $(this).closest("div.update-all-holder").find('span.status').text('');
-                $(this).closest("div.update-all-holder").find('span.error').text('');
+                status_span.text('');
+                error_span.text('');
                 var things = {update_all: true};
 
-                var that = this;
-                $('span.wait-progress').show();
+
+                spinner.show();
                 var success = function (data) {
-                    $('span.wait-progress').hide();
-                    $(that).closest("div.update-all-holder").find('span.status').text(data.message.words);
+                    spinner.hide();
+                    status_span.text(data.message.words);
 
                     if (data.message.not_included.length > 0) {
 
@@ -220,19 +226,45 @@ try {
                     if (data.message.not_processed.length > 0) {
 
                         $('div.ignored-emails').show();
-                        for (var j = 0; j < data.message.not_processed.length; j++) {
-                            $('ul.ignored-emails').append("<li>" + data.message.not_processed[j] + "</li>");
+                        for (var k = 0; j < data.message.not_processed.length; k++) {
+                            $('ul.ignored-emails').append("<li>" + data.message.not_processed[k] + "</li>");
                         }
                     }
 
 
                 };
                 var error = function (msg) {
-                    $(that).closest("div.update-all-holder").find('span.error').text(msg);
-                    $('span.wait-progress').hide();
+                    error_span.text(msg);
+                    spinner.hide();
                 };
-                talk_to_server("update-sig", things, success, error)
+                talk_to_server("update_all.php", things, success, error)
             });
+
+            $("button.email-all-credentials").click(function () {
+
+
+                var status_span = $(this).closest("div.email-all-holder").find('span.status');
+                var error_span = $(this).closest("div.email-all-holder").find('span.error');
+                var spinner = $(this).closest("div.email-all-holder").find('span.wait-progress');
+
+                var things = {email_all: true};
+                error_span.text('');
+                status_span.text('');
+
+                spinner.show();
+                var success = function (data) {
+                    spinner.hide();
+                    status_span.html(data.message);
+
+                };
+                var error = function (msg) {
+                    error_span.html(msg);
+                    spinner.hide();
+                };
+                talk_to_server("email_out.php", things, success, error)
+            });
+
+
         });
 
     </script>
@@ -299,6 +331,29 @@ try {
                     Download All Signatures As HTML
                 </button>
             </form>
+
+            <br>
+            <br>
+
+            <div class="email-all-holder">
+                <p>
+                    This will email all signatures out. Only accounts that already exist in the gsuit domain will be emailed
+                </p>
+
+                    <input type="hidden" name="style" value="all">
+                    <button type="button" name="email-all-credentials"
+                            class="btn btn-default btn-block full-width form-control email-all-credentials" style="" value="1">
+                        Email All Signatures
+                    </button>
+
+                <span class="wait-progress">
+                <i class="fas fa-spin fa-spinner " style="font-size: 3em"></i>
+                <span style="font-size: 2em;margin-left: 1em"> In Progress  </span>
+            </span>
+                <br>
+                <span class="status" style="font-size: larger;color:green"></span>
+                <span class="error" style="font-size: larger;color:red"></span>
+            </div>
 
         </div>
         <div class="col-sm-4 update-all-holder">

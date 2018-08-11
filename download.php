@@ -46,9 +46,9 @@ if ($_POST) {
 			$user_data           = get_user_info( $directory_client, $user_hash );
 			$current_spreadsheet = get_current_spreadsheet_info();
 			$data                = $current_spreadsheet['data'];
-			$gmail_client        = create_email_client();
+
 			$action_hash         = [];
-			$send_as_email       = $old_sig = null;
+
 			foreach ( $data as $row ) {
 				$primary_email = $row['email'];
 				if ( ! isset( $user_hash[ $primary_email ] ) ) {
@@ -57,10 +57,9 @@ if ($_POST) {
 				}
 				$the_name = str_replace( '@', '.', $primary_email );
 				$the_name .= '.html';
-				//get alias
-				$gmail = get_gmail_object( $gmail_client, $primary_email, $send_as_email, $old_sig );
+
 				$sig   = generate_footer( $row );
-				set_email_signature( $gmail, $sig, $primary_email, $send_as_email );
+
 				$action_hash[$the_name] = $sig;
 			}
 

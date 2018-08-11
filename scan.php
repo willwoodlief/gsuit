@@ -295,10 +295,10 @@ catch (Exception $e) {
 
                 var that = this;
                 var success = function(data) {
-                    $(that).closest("table").find('span.status').text(data.message);
+                    $(that).closest("td").find('span.status').text(data.message);
                 };
                 var error = function(msg) {
-                    $(that).closest("table").find('span.error').text(msg);
+                    $(that).closest("td").find('span.error').text(msg);
                 };
                 talk_to_server("update.php",things, success,error)
             });
@@ -308,10 +308,10 @@ catch (Exception $e) {
 
                 var that = this;
                 var success = function(data) {
-                    $(that).closest("table").find('span.status').text(data.message);
+                    $(that).closest("td").find('span.status').html(data.message);
                 };
                 var error = function(msg) {
-                    $(that).closest("table").find('span.error').text(msg);
+                    $(that).closest("td").find('span.error').html(msg);
                 };
                 talk_to_server("email_out.php",things, success,error)
             });
