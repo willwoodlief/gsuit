@@ -33,6 +33,7 @@ class Db_core
 
 	function query( $query )
 	{
+		$query = $this->escape($query);
 		$res = $this->sqlite->query( $query );
 		if ( !$res )
 		{
