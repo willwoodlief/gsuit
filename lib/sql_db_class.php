@@ -33,7 +33,6 @@ class Db_core
 
 	function query( $query )
 	{
-		$query = $this->escape($query);
 		$res = $this->sqlite->query( $query );
 		if ( !$res )
 		{
@@ -61,6 +60,7 @@ class Db_core
 
 			foreach( $in_data AS $key => $val )
 			{
+				$val = $this->escape($val);
 				$cols .= $key .", ";
 				$vals .= "'". $val ."', ";
 			}
@@ -81,6 +81,7 @@ class Db_core
 			$str = '';
 			foreach( $in_data AS $key => $val )
 			{
+				$val = $this->escape($val);
 				$str .= $key ." = '". $val ."', ";
 			}
 
